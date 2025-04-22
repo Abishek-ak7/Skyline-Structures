@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skyline Structures</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+    }
+    nav {
+      width: 250px;
+      background-color: #1a1a2e;
+      color: #fff;
+      height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      position: fixed;
+    }
+    nav h2 {
+      margin-top: 0;
+      color: #00f2fe;
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+    }
+    nav ul li {
+      margin: 15px 0;
+      cursor: pointer;
+      padding: 8px;
+      background-color: #16213e;
+      border-radius: 5px;
+    }
+    nav ul li:hover {
+      background-color: #0f3460;
+    }
+    nav input[type="text"] {
+      width: 80%;
+      padding: 5px;
+      margin-bottom: 20px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .content {
+      flex: 1;
+      padding: 20px;
+      background-color: #f0f8ff;
+      margin-left: 250px;
+    }
+    .hidden {
+      display: none;
+    }
+    .product-grid {
+      display: grid;
+      gap: 20px;
+    }
+    .home .product-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .products .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .product {
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      padding: 10px;
+      background-color: #e6ffe6;
+      text-align: center;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+    .work-options {
+      margin-top: 10px;
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 3px rgba(0,0,0,0.1);
+      display: block;
+    }
+    label, select, input {
+      display: block;
+      margin: 5px auto;
+      text-align: center;
+    }
+    .work-options button {
+      display: block;
+      margin: 10px auto;
+      padding: 5px 15px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .quantity {
+      width: 60px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+      text-align: center;
+    }
+    /* Mobile numbers section */
+    #mobileNumbers {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #mobileNumbers h2 {
+      color: #1a1a2e;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    #mobileList {
+      list-style: none;
+      padding: 0;
+    }
+    #mobileList li {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+    #mobileList li:last-child {
+      border-bottom: none;
+    }
+    .delete-btn {
+      background-color: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    #addMobileForm {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+    #addMobileForm label {
+      text-align: left;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    #addMobileForm input, #addMobileForm select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    #addMobileBtn {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 15px;
+      cursor: pointer;
+      height: 36px;
+    }
+    .list-header {
+      font-weight: bold;
+      background-color: #f5f5f5;
+      padding: 10px 15px;
+      border-radius: 4px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr auto;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    /* Category filter styles */
+    .filter-controls {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .filter-controls select {
+      margin-left: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    .filter-controls button {
+      margin-left: 10px;
+      padding: 8px 15px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    /* Highlight styles for filtered contacts */
+    .highlight {
+      background-color: #ffffdd;
+      transition: background-color 0.3s;
+    }
+    /* Image styling */
+    .product img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h2>Skyline Structures</h2>
+    <input type="text" placeholder="Search..." />
+    <ul>
+      <li onclick="showTab('home')">Home</li>
+      <li onclick="showTab('products')">Products</li>
+      <li onclick="showTab('mobileNumbers')">Profile</li>
+      <li onclick="showTab('cart')">Cart</li>
+      <li onclick="showTab('company')">Company</li>
+    </ul>
+  </nav>
+  <div class="content">
+    <div id="home" class="tab home" style="font-family: 'Roboto', sans-serif; background-color: #f5f5f5; background-image: repeating-linear-gradient(45deg, #1a1a2e, #1a1a2e 15px, #16213e 15px, #16213e 30px); padding: 40px 0; color: #e6e6e6; min-height: 100vh;">
+      <div style="width: 90%; max-width: 1200px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.95); border-radius: 8px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.2);">
+        <!-- Hero Banner with Blueprint Overlay -->
+        <div style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('images/construction-banner.jpg'); background-size: cover; background-position: center; height: 400px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; position: relative;">
+          <!-- Blueprint-style pattern overlay -->
+          <div style="position: absolute; top: 0; right: 0; width: 150px; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Crect x=%2225%22 y=%2225%22 width=%2250%22 height=%2250%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%220%22 x2=%22100%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%22100%22 y1=%220%22 x2=%220%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3C/svg%3E'); opacity: 0.3;"></div>
+          
+          <h1 style="font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; font-weight: 700; position: relative;">Skyline Structures</h1>
+          <div style="width: 80px; height: 4px; background: #ff9a3c; margin: -10px auto 30px;"></div>
+          <p style="font-size: 1.5rem; max-width: 800px; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Building Your Vision, One Brick at a Time</p>
+          <button onclick="showTab('products')" style="background-color: #ff9a3c; color: #1a1a2e; border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.3s;">Explore Our Services</button>
+        </div>
+        
+        <!-- Main Content with Construction Pattern Overlay -->
+        <div style="padding: 30px; background-color: #ffffff; color: #333; position: relative;">
+          <!-- Construction Pattern Overlay -->
+          <div style="position: absolute; top: 0; right: 0; bottom: 0; width: 120px; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22%3E%3Crect width=%2260%22 height=%2260%22 fill=%22none%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2215%22 x2=%2260%22 y2=%2215%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2230%22 x2=%2260%22 y2=%2230%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2245%22 x2=%2260%22 y2=%2245%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2215%22 y1=%220%22 x2=%2215%22 y2=%2260%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2230%22 y1=%220%22 x2=%2230%22 y2=%2260%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2245%22 y1=%220%22 x2=%2245%22 y2=%2260%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3C/svg%3E'); opacity: 0.5; pointer-events: none;"></div>
+          
+          <!-- Core Services Section -->
+          <div style="position: relative; z-index: 1;">
+            <h2 style="text-align: center; color: #1a1a2e; margin-bottom: 40px; font-size: 2rem; position: relative;">Our Core Services</h2>
+            <div style="width: 80px; height: 4px; background: #ff9a3c; margin: -30px auto 40px;"></div>
+            
+            <div class="product-grid" id="homeProducts" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+              <!-- Services will be loaded here by JavaScript -->
+            </div>
+          
+            <!-- Why Choose Us Section -->
+            <div style="margin-top: 60px; background: linear-gradient(135deg, #1a1a2e, #0f3460); color: white; padding: 40px; border-radius: 8px; text-align: center; position: relative; overflow: hidden;">
+              <!-- Blueprint pattern background -->
+              <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Crect x=%2225%22 y=%2225%22 width=%2250%22 height=%2250%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%220%22 x2=%22100%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%22100%22 y1=%220%22 x2=%220%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3C/svg%3E'); background-size: 30px 30px; opacity: 0.3;"></div>
+              
+              <h2 style="margin-top: 0; font-size: 2rem; position: relative;">Why Choose Skyline Structures?</h2>
+              <div style="width: 80px; height: 4px; background: #ff9a3c; margin: 15px auto 30px; position: relative;"></div>
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 30px; position: relative;">
+                <div>
+                  <div style="font-size: 3rem; margin-bottom: 15px;">🏗️</div>
+                  <h3 style="margin: 0 0 15px 0;">Expert Craftsmanship</h3>
+                  <p>Our skilled professionals deliver exceptional quality in every project with years of experience.</p>
+                </div>
+                <div>
+                  <div style="font-size: 3rem; margin-bottom: 15px;">⏱️</div>
+                  <h3 style="margin: 0 0 15px 0;">Timely Delivery</h3>
+                  <p>We complete projects on schedule without compromising quality standards.</p>
+                </div>
+                <div>
+                  <div style="font-size: 3rem; margin-bottom: 15px;">💰</div>
+                  <h3 style="margin: 0 0 15px 0;">Competitive Pricing</h3>
+                  <p>Quality construction services at affordable, transparent pricing.</p>
+                </div>
+              </div>
+            </div>
+          
+            <!-- Recent Projects Section -->
+            <div style="margin-top: 60px; text-align: center; position: relative;">
+              <h2 style="color: #1a1a2e; margin-bottom: 20px; position: relative;">Recent Projects</h2>
+              <div style="width: 80px; height: 4px; background: #ff9a3c; margin: -10px auto 30px;"></div>
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-top: 4px solid #1a1a2e; position: relative;">
+                  <img src="images/project1.jpg" alt="Residential Complex" style="width: 100%; height: 200px; object-fit: cover;">
+                  <div style="padding: 20px;">
+                    <h3 style="margin: 0 0 10px 0; color: #1a1a2e;">Green Valley Residences</h3>
+                    <p style="color: #666; display: flex; align-items: center;"><span style="display: inline-block; width: 12px; height: 12px; background: #ff9a3c; border-radius: 50%; margin-right: 8px;"></span>Completed: June 2023</p>
+                  </div>
+                </div>
+                <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-top: 4px solid #1a1a2e; position: relative;">
+                  <img src="images/project2.jpg" alt="Commercial Building" style="width: 100%; height: 200px; object-fit: cover;">
+                  <div style="padding: 20px;">
+                    <h3 style="margin: 0 0 10px 0; color: #1a1a2e;">Skyline Business Center</h3>
+                    <p style="color: #666; display: flex; align-items: center;"><span style="display: inline-block; width: 12px; height: 12px; background: #ff9a3c; border-radius: 50%; margin-right: 8px;"></span>Completed: March 2023</p>
+                  </div>
+                </div>
+                <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-top: 4px solid #1a1a2e; position: relative;">
+                  <img src="images/project3.jpg" alt="Interior Design" style="width: 100%; height: 200px; object-fit: cover;">
+                  <div style="padding: 20px;">
+                    <h3 style="margin: 0 0 10px 0; color: #1a1a2e;">Luxury Villa Interior</h3>
+                    <p style="color: #666; display: flex; align-items: center;"><span style="display: inline-block; width: 12px; height: 12px; background: #ff9a3c; border-radius: 50%; margin-right: 8px;"></span>Completed: January 2023</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="products" class="tab products hidden">
+      <h1>Products</h1>
+      <div class="product-grid" id="productList"></div>
+    </div>
+    <div id="mobileNumbers" class="tab hidden">
+      <h2>Customer Contacts</h2>
+      <div class="filter-controls">
+        <label for="filterCategory">Filter by Work Type:</label>
+        <select id="filterCategory">
+          <option value="">All Categories</option>
+          <!-- Categories will be added here by JavaScript -->
+        </select>
+        <button onclick="filterContacts()">Apply Filter</button>
+        <button onclick="clearFilter()">Clear Filter</button>
+      </div>
+      <div class="list-header">
+        <div>Name</div>
+        <div>Mobile</div>
+        <div>Work Type</div>
+        <div>Location</div>
+        <div>Action</div>
+      </div>
+      <ul id="mobileList"></ul>
+      <form id="addMobileForm" onsubmit="addCustomerContact(event)">
+        <div>
+          <label for="customerName">Name</label>
+          <input type="text" id="customerName" placeholder="Customer name" required>
+        </div>
+        <div>
+          <label for="customerMobile">Mobile</label>
+          <input type="tel" id="customerMobile" placeholder="10-digit number" required pattern="[0-9]{10}">
+        </div>
+        <div>
+          <label for="customerWork">Work Type</label>
+          <select id="customerWork" required>
+            <option value="">Select Work Type</option>
+            <!-- Categories will be added here by JavaScript -->
+          </select>
+        </div>
+        <div>
+          <label for="customerLocation">Location</label>
+          <input type="text" id="customerLocation" placeholder="Area/City" required>
+        </div>
+        <div>
+          <button type="submit" id="addMobileBtn">Add Contact</button>
+        </div>
+      </form>
+    </div>
+    <div id="cart" class="tab hidden" style="font-family: 'Roboto', sans-serif; background-color: #f5f5f5; background-image: repeating-linear-gradient(45deg, #1a1a2e, #1a1a2e 15px, #16213e 15px, #16213e 30px); padding: 40px 0; color: #e6e6e6; min-height: 100vh;">
+      <div style="width: 90%; max-width: 1200px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.95); border-radius: 8px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.2);">
+        <!-- Cart Header -->
+        <div style="background: #1a1a2e; color: white; padding: 20px 30px; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700; text-transform: uppercase; position: relative;">Your Cart</h1>
+            <div style="content: ''; display: block; width: 80px; height: 4px; background: #ff9a3c; margin-top: 15px;"></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <span id="cartCount" style="background-color: #ff9a3c; color: #1a1a2e; padding: 8px 12px; border-radius: 50%; font-weight: bold; display: inline-block; min-width: 20px; text-align: center;">0</span>
+            <span style="font-size: 24px;">🛒</span>
+          </div>
+          <!-- Blueprint-style pattern overlay -->
+          <div style="position: absolute; top: 0; right: 0; width: 150px; height: 100%; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Crect x=%2225%22 y=%2225%22 width=%2250%22 height=%2250%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%220%22 x2=%22100%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%22100%22 y1=%220%22 x2=%220%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3C/svg%3E'); opacity: 0.3;"></div>
+        </div>
+        
+        <!-- Cart Content -->
+        <div style="padding: 30px; background-color: #ffffff; color: #333; position: relative;">
+          <!-- Construction Pattern Overlay -->
+          <div style="position: absolute; top: 0; right: 0; bottom: 0; width: 120px; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22%3E%3Crect width=%2260%22 height=%2260%22 fill=%22none%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2215%22 x2=%2260%22 y2=%2215%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2230%22 x2=%2260%22 y2=%2230%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2245%22 x2=%2260%22 y2=%2245%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2215%22 y1=%220%22 x2=%2215%22 y2=%2260%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2230%22 y1=%220%22 x2=%2230%22 y2=%2260%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2245%22 y1=%220%22 x2=%2245%22 y2=%2260%22 stroke=%22rgba(26,26,46,0.1)%22 stroke-width=%220.5%22/%3E%3C/svg%3E'); opacity: 0.5; pointer-events: none;"></div>
+          
+          <!-- Empty Cart Message -->
+          <div id="emptyCart" style="text-align: center; padding: 40px 0; display: block;">
+            <div style="font-size: 60px; margin-bottom: 20px;">🛒</div>
+            <h2 style="color: #1a1a2e; margin-top: 0;">Your cart is empty</h2>
+            <p style="margin-bottom: 30px; color: #666;">Browse our construction products and materials to get started.</p>
+            <a href="#" onclick="showTab('products'); return false;" style="background-color: #1a1a2e; color: white; text-decoration: none; padding: 12px 25px; border-radius: 4px; font-weight: bold; display: inline-block;">Shop Now</a>
+          </div>
+          
+          <!-- Cart Items Table -->
+          <div id="cartContent" style="display: none;">
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                <thead>
+                  <tr style="background-color: #f5f7fa; border-bottom: 2px solid #1a1a2e;">
+                    <th style="padding: 15px; text-align: left; color: #1a1a2e;">Product</th>
+                    <th style="padding: 15px; text-align: center; color: #1a1a2e;">Unit Price</th>
+                    <th style="padding: 15px; text-align: center; color: #1a1a2e;">Quantity</th>
+                    <th style="padding: 15px; text-align: right; color: #1a1a2e;">Total</th>
+                    <th style="padding: 15px; text-align: center; color: #1a1a2e;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="cartItems">
+                  <!-- Items will be populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Order Summary -->
+            <div style="display: flex; flex-wrap: wrap; gap: 30px;">
+              <!-- Coupon Code -->
+              <div style="flex: 1; min-width: 300px; background: linear-gradient(to bottom right, rgba(26, 26, 46, 0.05), rgba(26, 26, 46, 0.02)); padding: 20px; border-radius: 5px; border-left: 4px solid #1a1a2e;">
+                <h3 style="margin-top: 0; color: #1a1a2e; font-size: 1.2rem;">Have a coupon?</h3>
+                <div style="display: flex;">
+                  <input type="text" placeholder="Enter coupon code" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px 0 0 4px; font-family: inherit;">
+                  <button style="background-color: #1a1a2e; color: white; border: none; padding: 10px 15px; border-radius: 0 4px 4px 0; cursor: pointer; font-weight: bold;">Apply</button>
+                </div>
+              </div>
+              
+              <!-- Cart Summary -->
+              <div style="flex: 1; min-width: 300px; background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); color: white; padding: 20px; border-radius: 5px; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Crect x=%2225%22 y=%2225%22 width=%2250%22 height=%2250%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%220%22 x2=%22100%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%22100%22 y1=%220%22 x2=%220%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3C/svg%3E'); background-size: 30px 30px;">
+                <h3 style="margin-top: 0; font-size: 1.2rem;">Order Summary</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                  <span>Subtotal</span>
+                  <span id="subtotal">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                  <span>Tax (18% GST)</span>
+                  <span id="tax">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                  <span>Shipping</span>
+                  <span id="shipping">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; margin-top: 15px;">
+                  <span>Total</span>
+                  <span id="total">₹0.00</span>
+                </div>
+                <button id="checkoutBtn" style="background-color: #ff9a3c; color: #1a1a2e; border: none; padding: 12px 0; width: 100%; margin-top: 20px; font-size: 16px; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-weight: bold; transition: background-color 0.3s;">Proceed to Checkout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="company" class="tab hidden" style="font-family: 'Roboto', sans-serif; background-color: #f5f5f5; background-image: repeating-linear-gradient(45deg, #1a1a2e, #1a1a2e 15px, #16213e 15px, #16213e 30px); padding: 40px 0; color: #e6e6e6;">
+      <div style="width: 90%; max-width: 1200px; margin: 0 auto; background-color: rgba(255, 255, 255, 0.95); border-radius: 8px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.2);">
+        <!-- Header -->
+        <div style="background: #1a1a2e; color: white; padding: 30px; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+          <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700; text-transform: uppercase; position: relative;">Skyline Structures</h1>
+          <div style="content: ''; display: block; width: 80px; height: 4px; background: #ff9a3c; margin-top: 15px;"></div>
+        </div>
+        
+        <div style="padding: 30px; display: flex; flex-wrap: wrap; gap: 30px; background-color: #ffffff; color: #333;">
+          <!-- Company Info Section -->
+          <div style="flex: 1; min-width: 300px;">
+            <p style="line-height: 1.6; margin-bottom: 20px; color: #333; border-left: 4px solid #1a1a2e; padding-left: 15px;">Skyline Structures is a trusted company providing a wide range of construction-related services including brickwork, plastering, concreting, electrical wiring, interior design, and more. Our team ensures quality, affordability, and reliability for all your construction needs.</p>
+            
+            <div style="background-color: #f5f7fa; border-left: 4px solid #1a1a2e; padding: 15px; margin-bottom: 20px; position: relative; overflow: hidden;">
+              <div style="position: absolute; right: -20px; top: -20px; width: 100px; height: 100px; background-color: #1a1a2e; opacity: 0.05; border-radius: 50%;"></div>
+              <p style="margin: 0; color: #333; position: relative;"><strong style="color: #1a1a2e;">⚒️ Trusted Company:</strong> With years of experience and satisfied customers, we are known for excellence in every project.</p>
+            </div>
+            
+            <div style="background-color: #f5f7fa; border-left: 4px solid #1a1a2e; padding: 15px; margin-bottom: 20px; position: relative; overflow: hidden;">
+              <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background-color: #1a1a2e; opacity: 0.05; border-radius: 50%;"></div>
+              <p style="margin-top: 0; margin-bottom: 10px; color: #333; position: relative;"><strong style="color: #1a1a2e;">🏗️ Our Services:</strong></p>
+              <ul style="color: #333; padding-left: 20px; margin-bottom: 0; position: relative;">
+                <li>Professional Brickwork</li>
+                <li>Expert Plastering</li>
+                <li>Quality Concreting</li>
+                <li>Electrical Installation</li>
+                <li>Interior Design Solutions</li>
+                <li>Renovation Projects</li>
+              </ul>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); color: white; padding: 20px; border-radius: 5px; margin-top: 20px; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Crect x=%2225%22 y=%2225%22 width=%2250%22 height=%2250%22 fill=%22none%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%220%22 x2=%22100%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3Cline x1=%22100%22 y1=%220%22 x2=%220%22 y2=%22100%22 stroke=%22rgba(255,255,255,0.1)%22 stroke-width=%220.5%22/%3E%3C/svg%3E'); background-size: 30px 30px;">
+              <p style="margin: 0 0 10px 0;color:black"><strong>🏢 Location:</strong> No. 45, Builders Street, Construction Nagar, Chennai - 600001</p>
+              <p style="margin: 0;color:black"><strong>📞 Contact:</strong> +91 98765 43210 | skyline@structures.com</p>
+            </div>
+          </div>
+          
+          <!-- Feedback Form Section -->
+          <div style="flex: 1; min-width: 300px; background: linear-gradient(to bottom right, rgba(26, 26, 46, 0.05), rgba(26, 26, 46, 0.02)); padding: 25px; border-radius: 5px; border-top: 5px solid #1a1a2e; position: relative;">
+            <h3 style="margin-top: 0; color: #1a1a2e; font-size: 1.5rem; margin-bottom: 20px; position: relative;">🔨 Share Your Feedback</h3>
+            <form id="feedbackForm" onsubmit="showSuccessPopup(event)" style="position: relative;">
+              <div style="margin-bottom: 15px;">
+                <label for="name" style="display: block; margin-bottom: 5px; font-weight: bold; color: #1a1a2e;">Full Name</label>
+                <input type="text" id="name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; background-color: white; color: #333;" placeholder="Enter your name" required>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label for="email" style="display: block; margin-bottom: 5px; font-weight: bold; color: #1a1a2e;">Email Address</label>
+                <input type="email" id="email" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; background-color: white; color: #333;" placeholder="Enter your email" required>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label for="phone" style="display: block; margin-bottom: 5px; font-weight: bold; color: #1a1a2e;">Phone Number</label>
+                <input type="tel" id="phone" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; background-color: white; color: #333;" placeholder="Enter your phone number">
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label for="service" style="display: block; margin-bottom: 5px; font-weight: bold; color: #1a1a2e;">Service Interest</label>
+                <select id="service" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; background-color: white; color: #333;" required>
+                  <option value="">Select a service</option>
+                  <option value="brickwork">Brickwork</option>
+                  <option value="plastering">Plastering</option>
+                  <option value="concreting">Concreting</option>
+                  <option value="electrical">Electrical Work</option>
+                  <option value="interior">Interior Design</option>
+                  <option value="renovation">Renovation</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label for="message" style="display: block; margin-bottom: 5px; font-weight: bold; color: #1a1a2e;">Your Message</label>
+                <textarea id="message" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; height: 120px; resize: vertical; background-color: white; color: #333;" placeholder="Tell us about your project or leave feedback..." required></textarea>
+              </div>
+              
+              <button type="submit" style="background-color: #1a1a2e; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-weight: bold; transition: background-color 0.3s;">Submit Feedback</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Popup for Add/Remove -->
+  <div id="actionPopup" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #1a1a2e; color: white; padding: 15px 25px; border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 1000; border-left: 4px solid #ff9a3c;">
+    <span id="actionMessage">Item added to cart!</span>
+  </div>
+
+  <!-- Success Popup -->
+  <div id="successPopup" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background-color: white; border-top: 6px solid #1a1a2e; border-radius: 8px; padding: 30px; text-align: center; max-width: 400px; color: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; overflow: hidden;">
+      <!-- Pattern overlay for popup -->
+      <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22none%22 stroke=%22rgba(26,26,46,0.05)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2225%22 x2=%22100%22 y2=%2225%22 stroke=%22rgba(26,26,46,0.05)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2250%22 x2=%22100%22 y2=%2250%22 stroke=%22rgba(26,26,46,0.05)%22 stroke-width=%220.5%22/%3E%3Cline x1=%220%22 y1=%2275%22 x2=%22100%22 y2=%2275%22 stroke=%22rgba(26,26,46,0.05)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2225%22 y1=%220%22 x2=%2225%22 y2=%22100%22 stroke=%22rgba(26,26,46,0.05)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2250%22 y1=%220%22 x2=%2250%22 y2=%22100%22 stroke=%22rgba(26,26,46,0.05)%22 stroke-width=%220.5%22/%3E%3Cline x1=%2275%22 y1=%220%22 x2=%2275%22 y2=%22100%22 stroke=%22rgba(26,26,46,0.05)%22 stroke-width=%220.5%22/%3E%3C/svg%3E'); opacity: 0.1; pointer-events: none;"></div>
+      
+      <div style="position: relative;">
+        <div style="font-size: 50px; margin-bottom: 20px; color: #1a1a2e;">✅</div>
+        <h2 style="margin-top: 0; color: #1a1a2e;">Thank You!</h2>
+        <p style="margin-bottom: 20px; font-size: 18px;">Your form has been submitted successfully. We'll get back to you shortly.</p>
+        <button onclick="closePopup()" style="background-color: #1a1a2e; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Product data for construction services
+    const serviceProducts = [
+      { 
+        id: 1, 
+        name: "Brickwork and Plastering, Concreting", 
+        price: 1250, 
+        pricingInfo: "Mason: ₹1250/day, ₹600/half-day | Helper: ₹1000/day, ₹500/half-day",
+        image: "images/brickwork.jpg" 
+      },
+      { 
+        id: 2, 
+        name: "Centring", 
+        price: 1000, 
+        pricingInfo: "Skilled: ₹1000/day | Unskilled: ₹700/day",
+        image: "images/centringwork and concreting.jpg" 
+      },
+      { 
+        id: 3, 
+        name: "Demolition", 
+        price: 700, 
+        pricingInfo: "₹700/hour",
+        image: "images/demolition.jpg" 
+      },
+      { 
+        id: 4, 
+        name: "Earthwork and Excavation", 
+        price: 600, 
+        pricingInfo: "₹600/hour",
+        image: "images/earthwork and excavation.jpg" 
+      },
+      { 
+        id: 5, 
+        name: "Interior Design", 
+        price: 15, 
+        pricingInfo: "₹10–20 per sq ft",
+        image: "images/interiordesgin.webp" 
+      },
+      { 
+        id: 6, 
+        name: "Painting", 
+        price: 1500, 
+        pricingInfo: "Painter: ₹1500/day, ₹750/half-day",
+        image: "images/painting.jpg" 
+      },
+      { 
+        id: 7, 
+        name: "Plumbing", 
+        price: 1500, 
+        pricingInfo: "₹1500/day, ₹750/half-day",
+        image: "images/plumbing.jpg" 
+      },
+      { 
+        id: 8, 
+        name: "Welding and Grill Work", 
+        price: 1500, 
+        pricingInfo: "₹1500/day, ₹700/half-day",
+        image: "images/welding and grill work.jpg" 
+      },
+      { 
+        id: 9, 
+        name: "Wiring", 
+        price: 1500, 
+        pricingInfo: "Wireman: ₹1500/day, ₹500/half-day | Helper: ₹1000/day, ₹500/half-day",
+        image: "images/wiring.png" 
+      }
+    ];
+
+    // Product data for construction materials
+    const materialProducts = [
+      { id: 10, name: "Premium Cement (50kg)", price: 350, image: "https://via.placeholder.com/80" },
+      { id: 11, name: "Construction Bricks (100pcs)", price: 800, image: "https://via.placeholder.com/80" },
+      { id: 12, name: "Steel Reinforcement Bars (Bundle)", price: 1200, image: "https://via.placeholder.com/80" }
+    ];
+    
+    // Combined products array
+    const allProducts = [...serviceProducts, ...materialProducts];
+    
+    // Cart state
+    let cart = [];
+    
+    // Customer contacts data
+    let customerContacts = JSON.parse(localStorage.getItem('customerContacts')) || [];
+    let currentFilter = '';
+    
+    // Initialize the page
+    document.addEventListener("DOMContentLoaded", function() {
+      // Initialize work type dropdowns
+      initializeWorkTypeDropdowns();
+      
+      // Load service products
+      loadServiceProducts('homeProducts');
+      loadServiceProducts('productList');
+      
+      // Update customer contacts list
+      updateCustomerContactsList();
+      
+      // Set up event listener for checkout button
+      document.getElementById("checkoutBtn").addEventListener("click", function() {
+        alert("Proceeding to checkout with " + cart.length + " items!");
+      });
+      
+      // Add event delegation for cart items
+      document.getElementById("cartItems").addEventListener("click", function(event) {
+        if (event.target.classList.contains("removeBtn") || event.target.parentElement.classList.contains("removeBtn")) {
+          const productId = parseInt(event.target.closest("button").dataset.productId);
+          removeFromCart(productId);
+        }
+      });
+    });
+    
+    // Initialize work type dropdowns
+    function initializeWorkTypeDropdowns() {
+      const customerWorkSelect = document.getElementById('customerWork');
+      const filterCategorySelect = document.getElementById('filterCategory');
+      
+      // Clear existing options
+      customerWorkSelect.innerHTML = '<option value="">Select Work Type</option>';
+      filterCategorySelect.innerHTML = '<option value="">All Categories</option>';
+      
+      // Add service products as options
+      serviceProducts.forEach(product => {
+        const workOption = document.createElement('option');
+        workOption.value = product.name;
+        workOption.textContent = product.name;
+        customerWorkSelect.appendChild(workOption);
+        
+        const filterOption = document.createElement('option');
+        filterOption.value = product.name;
+        filterOption.textContent = product.name;
+        filterCategorySelect.appendChild(filterOption);
+      });
+    }
+    
+    // Load service products into container
+    function loadServiceProducts(containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      
+      serviceProducts.forEach((product) => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.style.cssText = `
+          background-color: white;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          margin-bottom: 25px;
+          transition: transform 0.3s, box-shadow 0.3s;
+        `;
+        
+        div.innerHTML = ` 
+  <div style="position: relative; overflow: hidden;">
+    <img src="${product.image}" alt="${product.name}" style="width: 100%; height: 200px; object-fit: cover;" />
+    <div style="position: absolute; top: 10px; right: 10px; background-color: #ff9a3c; color: #1a1a2e; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 14px;">
+      ${product.id <= 9 ? 'Service' : 'Material'}
+    </div>
+  </div>
+  
+  <div style="padding: 20px;">
+    <h3 style="margin: 0 0 15px 0; color: #1a1a2e; font-size: 1.2rem; cursor: pointer;" class="category-title">${product.name}</h3>
+    
+    <div class="work-options" style="background: linear-gradient(to bottom right, rgba(26, 26, 46, 0.05), rgba(26, 26, 46, 0.02)); padding: 15px; border-radius: 5px; border-left: 4px solid #1a1a2e;">
+      <div style="margin-bottom: 12px;">
+        <label style="display: block; margin-bottom: 5px; color: #333; font-weight: 500;">
+          Person:
+          <input type="number" class="person-input" min="2" max="12" value="2" 
+            style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-left: 5px;">
+        </label>
+      </div>
+      
+      <div style="margin-bottom: 12px;">
+        <label style="display: block; margin-bottom: 5px; color: #333; font-weight: 500;">
+          Duration (days):
+          <input type="number" class="duration-input" min="1" max="6" value="1" 
+            style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-left: 5px;">
+        </label>
+      </div>
+      
+      <div style="margin-bottom: 12px;">
+        <label style="display: block; margin-bottom: 5px; color: #333; font-weight: 500;">
+          Quantity:
+          <input class="quantity-input" type="number" value="1" min="1" 
+            style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-left: 5px;">
+        </label>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; color: #666; font-size: 0.9rem;">
+          Cost Info: <span style="font-style: italic;">${product.pricingInfo}</span>
+        </label>
+      </div>
+      
+      <button onclick="addToCart(${product.id}, 1)" 
+        style="background-color: #1a1a2e; color: white; border: none; padding: 10px 15px; width: 100%; 
+        border-radius: 4px; cursor: pointer; font-weight: bold; transition: background-color 0.3s;">
+        Add to Cart
+      </button>
+    </div>
+  </div>
+`;
+        
+        // Hover effect
+        div.addEventListener('mouseenter', () => {
+          div.style.transform = 'translateY(-5px)';
+          div.style.boxShadow = '0 8px 16px rgba(0,0,0,0.2)';
+        });
+        
+        div.addEventListener('mouseleave', () => {
+          div.style.transform = 'translateY(0)';
+          div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+        });
+
+        // Add click event to show contacts related to this category
+        div.querySelector('.category-title').addEventListener('click', function() {
+          showContactsByCategory(product.name);
+        });
+
+        container.appendChild(div);
+      });
+    }
+    
+    // Show contacts by category
+    function showContactsByCategory(category) {
+      showTab('mobileNumbers');
+      document.getElementById('filterCategory').value = category;
+      filterContacts();
+    }
+    
+    // Show tab
+    function showTab(tabId) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      if (tabId === 'mobileNumbers') {
+        updateCustomerContactsList();
+      }
+    }
+    
+    // Add item to cart
+    function addToCart(productId, quantity) {
+      const product = allProducts.find(p => p.id === productId);
+      if (!product) return;
+      
+      const existingItem = cart.find(item => item.productId === productId);
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.push({
+          productId,
+          quantity,
+          name: product.name,
+          price: product.price,
+          image: product.image
+        });
+      }
+      
+      showActionPopup("Item added to cart!");
+      updateCartUI();
+    }
+    
+    // Remove item from cart
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.productId !== productId);
+      showActionPopup("Item removed from cart!");
+      updateCartUI();
+    }
+    
+    // Update quantity
+    function updateQuantity(productId, newQuantity) {
+      const item = cart.find(item => item.productId === productId);
+      if (item) {
+        item.quantity = Math.max(1, newQuantity);
+        updateCartUI();
+      }
+    }
+    
+    // Update cart UI
+    function updateCartUI() {
+      const cartItemsEl = document.getElementById("cartItems");
+      const emptyCartEl = document.getElementById("emptyCart");
+      const cartContentEl = document.getElementById("cartContent");
+      const cartCountEl = document.getElementById("cartCount");
+      
+      // Update cart count
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      cartCountEl.textContent = totalItems;
+      
+      // Show/hide empty cart message
+      if (cart.length === 0) {
+        emptyCartEl.style.display = "block";
+        cartContentEl.style.display = "none";
+        return;
+      } else {
+        emptyCartEl.style.display = "none";
+        cartContentEl.style.display = "block";
+      }
+      
+      // Render cart items
+      cartItemsEl.innerHTML = cart.map(item => {
+        const product = allProducts.find(p => p.id === item.productId);
+        return `
+        <tr style="border-bottom: 1px solid #eee;">
+          <td style="padding: 15px; display: flex; align-items: center; gap: 15px;">
+            <img src="${product ? product.image : ''}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
+            <div>
+              <h4 style="margin: 0 0 5px 0; color: #1a1a2e;">${item.name}</h4>
+              <span style="color: #666; font-size: 14px;">Product ID: #${item.productId}</span>
+            </div>
+          </td>
+          <td style="padding: 15px; text-align: center;">₹${item.price.toFixed(2)}</td>
+          <td style="padding: 15px; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+              <button onclick="updateQuantity(${item.productId}, ${item.quantity - 1})" style="background-color: #f5f7fa; color: #1a1a2e; border: 1px solid #ddd; width: 30px; height: 30px; border-radius: 4px; cursor: pointer; font-weight: bold;">-</button>
+              <input type="number" value="${item.quantity}" min="1" style="width: 50px; padding: 5px; text-align: center; border: 1px solid #ddd; border-radius: 4px;" onchange="updateQuantity(${item.productId}, parseInt(this.value))">
+              <button onclick="updateQuantity(${item.productId}, ${item.quantity + 1})" style="background-color: #f5f7fa; color: #1a1a2e; border: 1px solid #ddd; width: 30px; height: 30px; border-radius: 4px; cursor: pointer; font-weight: bold;">+</button>
+            </div>
+          </td>
+          <td style="padding: 15px; text-align: right; font-weight: bold;">₹${(item.price * item.quantity).toFixed(2)}</td>
+          <td style="padding: 15px; text-align: center;">
+            <button class="removeBtn" data-product-id="${item.productId}" style="background-color: transparent; color: #ff3b30; border: none; cursor: pointer; font-size: 16px;">🗑️</button>
+          </td>
+        </tr>
+      `}).join('');
+      
+      // Calculate and update totals
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const tax = subtotal * 0.18; // 18% GST
+      const shipping = subtotal > 2000 ? 0 : 200; // Free shipping over ₹2000
+      const total = subtotal + tax + shipping;
+      
+      document.getElementById("subtotal").textContent = `₹${subtotal.toFixed(2)}`;
+      document.getElementById("tax").textContent = `₹${tax.toFixed(2)}`;
+      document.getElementById("shipping").textContent = shipping === 0 ? "FREE" : `₹${shipping.toFixed(2)}`;
+      document.getElementById("total").textContent = `₹${total.toFixed(2)}`;
+    }
+    
+    // Show action popup message
+    function showActionPopup(message) {
+      const popup = document.getElementById("actionPopup");
+      document.getElementById("actionMessage").textContent = message;
+      
+      popup.style.display = "block";
+      
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 3000);
+    }
+    
+    // Customer Contacts Functions
+    function updateCustomerContactsList() {
+      const mobileList = document.getElementById('mobileList');
+      mobileList.innerHTML = '';
+      
+      customerContacts.forEach((contact, index) => {
+        const li = document.createElement('li');
+        
+        if (currentFilter && contact.work === currentFilter) {
+          li.classList.add('highlight');
+        }
+        
+        li.innerHTML = `
+          <div>${contact.name}</div>
+          <div>${contact.mobile}</div>
+          <div>${contact.work}</div>
+          <div>${contact.location}</div>
+          <button class="delete-btn" onclick="deleteCustomerContact(${index})">Delete</button>
+        `;
+        mobileList.appendChild(li);
+      });
+    }
+    
+    function filterContacts() {
+      currentFilter = document.getElementById('filterCategory').value;
+      updateCustomerContactsList();
+    }
+    
+    function clearFilter() {
+      document.getElementById('filterCategory').value = '';
+      currentFilter = '';
+      updateCustomerContactsList();
+    }
+    
+    function addCustomerContact(event) {
+      event.preventDefault();
+      const name = document.getElementById('customerName').value;
+      const mobile = document.getElementById('customerMobile').value;
+      const work = document.getElementById('customerWork').value;
+      const location = document.getElementById('customerLocation').value;
+      
+      if (mobile.length !== 10 || isNaN(mobile)) {
+        alert('Please enter a valid 10-digit mobile number');
+        return;
+      }
+      
+      customerContacts.push({ name, mobile, work, location });
+      localStorage.setItem('customerContacts', JSON.stringify(customerContacts));
+      
+      document.getElementById('customerName').value = '';
+      document.getElementById('customerMobile').value = '';
+      document.getElementById('customerWork').value = '';
+      document.getElementById('customerLocation').value = '';
+      
+      updateCustomerContactsList();
+    }
+    
+    function deleteCustomerContact(index) {
+      if (confirm('Are you sure you want to delete this contact?')) {
+        customerContacts.splice(index, 1);
+        localStorage.setItem('customerContacts', JSON.stringify(customerContacts));
+        updateCustomerContactsList();
+      }
+    }
+    
+    function showSuccessPopup(event) {
+      event.preventDefault();
+      const popup = document.getElementById('successPopup');
+      popup.style.display = 'flex';
+      document.getElementById('feedbackForm').reset();
+    }
+    
+    function closePopup() {
+      document.getElementById('successPopup').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
